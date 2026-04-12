@@ -274,13 +274,14 @@ async function init() {
 
   const { data: profil } = await sb
     .from("profiles")
-    .select("navn")
+    .select("navn, rolle")
     .eq("id", brugerSession.user.id)
     .single();
 
   const navn = profil?.navn || brugerSession.user.email.split("@")[0];
   document.getElementById("bruger-navn").textContent = navn;
   document.getElementById("bruger-avatar").textContent = navn.charAt(0).toUpperCase();
+  document.getElementById("bruger-rolle").textContent = profil?.rolle || "";
 
   const [kornRes, markRes, maskineRes] = await Promise.all([
     sb.from("korntyper").select("id, navn").order("navn"),

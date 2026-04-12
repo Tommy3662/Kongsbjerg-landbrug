@@ -193,7 +193,7 @@ async function indlaesbruger() {
 
   const { data: profil } = await sb
     .from("profiles")
-    .select("navn")
+    .select("navn, rolle")
     .eq("id", bruger.id)
     .single();
 
@@ -203,6 +203,7 @@ async function indlaesbruger() {
   document.getElementById("velkomst-navn").textContent = navn;
   document.getElementById("bruger-navn").textContent = navn;
   document.getElementById("bruger-avatar").textContent = forbogstav;
+  document.getElementById("bruger-rolle").textContent = profil?.rolle || "";
 }
 
 // --- Log ud ---

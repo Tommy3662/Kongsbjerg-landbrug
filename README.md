@@ -1,2 +1,0 @@
-# Kongsbjerg-landbrug
-Registrering

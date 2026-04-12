@@ -112,7 +112,7 @@ async function gemLevering() {
     document.getElementById("mark").value = "";
     document.getElementById("maskine").value = "";
     document.getElementById("vaegt").value = "";
-    document.getElementById("vandprocent").value = "";
+    document.getElementById("vandprocent").value = "0";
     document.getElementById("noter").value = "";
     knap.disabled = false;
     knap.textContent = "Gem levering";
@@ -131,13 +131,14 @@ async function init() {
 
   const { data: profil } = await sb
     .from("profiles")
-    .select("navn")
+    .select("navn, rolle")
     .eq("id", brugerSession.user.id)
     .single();
 
   const navn = profil?.navn || brugerSession.user.email.split("@")[0];
   document.getElementById("bruger-navn").textContent = navn;
   document.getElementById("bruger-avatar").textContent = navn.charAt(0).toUpperCase();
+  document.getElementById("bruger-rolle").textContent = profil?.rolle || "";
 
   await hentDropdowns();
 }
