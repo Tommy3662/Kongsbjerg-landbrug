@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdata — Mine leveringer</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-ikon">🌾</div>
+        <span class="logo-tekst">Markdata</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-punkt">
+          <span class="nav-ikon">⊞</span>
+          <span>Overblik</span>
+        </a>
+        <a href="registrer.html" class="nav-punkt">
+          <span class="nav-ikon">＋</span>
+          <span>Registrer levering</span>
+        </a>
+        <a href="mine-leveringer.html" class="nav-punkt aktiv">
+          <span class="nav-ikon">☰</span>
+          <span>Mine leveringer</span>
+        </a>
+        <!-- <a href="marker.html" class="nav-punkt">
+          <span class="nav-ikon">◈</span>
+          <span>Marker</span>
+        </a> -->
+      </nav>
+
+      <div class="sidebar-bund">
+        <div class="bruger-info">
+          <div class="bruger-avatar" id="bruger-avatar">—</div>
+          <div class="bruger-detaljer">
+            <span class="bruger-navn" id="bruger-navn">—</span>
+            <span class="bruger-rolle">Landmand</span>
+          </div>
+        </div>
+        <button class="log-ud-knap" id="log-ud-knap">Log ud</button>
+      </div>
+    </aside>
+
+    <!-- HOVEDINDHOLD -->
+    <main class="hoved-indhold">
+      <div class="topbar">
+        <div class="velkomst">
+          <h1 class="velkomst-titel">Mine leveringer</h1>
+          <p class="velkomst-dato" id="velkomst-dato"></p>
+        </div>
+        <button
+          class="ny-levering-knap"
+          onclick="window.location.href='registrer.html'"
+        >
+          + Registrer ny levering
+        </button>
+      </div>
+
+      <!-- Leveringer-tabel -->
+      <div class="sektion">
+        <div class="sektion-header">
+          <h2 class="sektion-titel">Alle leveringer</h2>
+          <span class="antal-tekst" id="antal-tekst"></span>
+        </div>
+
+        <div class="tabel-wrapper">
+          <table class="data-tabel">
+            <thead>
+              <tr>
+                <th class="sorterbar" data-sort="dato">Dato</th>
+                <th class="sorterbar" data-sort="korntype">Korntype</th>
+                <th class="sorterbar" data-sort="mark">Mark</th>
+                <th class="sorterbar" data-sort="maskine">Maskine</th>
+                <th class="sorterbar" data-sort="vaegt">Vægt (kg)</th>
+                <th class="sorterbar" data-sort="vandprocent">Vandprocent</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="leveringer-tbody">
+              <tr>
+                <td colspan="7" class="tabel-loading">Henter leveringer...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <!-- REDIGER MODAL -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-titel">Rediger levering</h2>
+          <button class="modal-luk" id="modal-luk">✕</button>
+        </div>
+
+        <div class="modal-indhold">
+          <input type="hidden" id="rediger-id" />
+
+          <div class="form-gruppe">
+            <label for="rediger-korntype">Korntype</label>
+            <div class="select-wrapper">
+              <select id="rediger-korntype" class="form-select"></select>
+            </div>
+          </div>
+
+          <div class="form-gruppe">
+            <label for="rediger-mark">Mark</label>
+            <div class="select-wrapper">
+              <select id="rediger-mark" class="form-select"></select>
+            </div>
+          </div>
+
+          <div class="form-gruppe">
+            <label for="rediger-maskine">Maskine / Traktor</label>
+            <div class="select-wrapper">
+              <select id="rediger-maskine" class="form-select"></select>
+            </div>
+          </div>
+
+          <div class="form-grid-2">
+            <div class="form-gruppe">
+              <label for="rediger-vaegt">Vægt (kg)</label>
+              <input
+                type="number"
+                id="rediger-vaegt"
+                class="form-input"
+                min="0"
+                step="1"
+              />
+            </div>
+            <div class="form-gruppe">
+              <label for="rediger-vandprocent"
+                >Vandprocent % <span class="valgfri">— valgfrit</span></label
+              >
+              <input
+                type="number"
+                id="rediger-vandprocent"
+                class="form-input"
+                min="0"
+                max="100"
+                step="0.1"
+              />
+            </div>
+          </div>
+
+          <div class="form-gruppe">
+            <label for="rediger-noter">Noter (valgfrit)</label>
+            <textarea
+              id="rediger-noter"
+              class="form-input form-textarea"
+              rows="3"
+              placeholder="Eventuelle bemærkninger..."
+            ></textarea>
+          </div>
+
+          <div class="fejlbesked" id="modal-fejl"></div>
+          <div class="succesbesked" id="modal-succes"></div>
+
+          <div class="form-knapper">
+            <button class="knap-sekundaer" id="modal-annuller">Annuller</button>
+            <button class="knap" id="gem-rediger-knap">Gem ændringer</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="mine-leveringer.js"></script>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Landbrug — Log ind</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="kort">
+      <div class="logo">
+        <div class="logo-ikon">🌾</div>
+        <span class="logo-tekst">Markdata</span>
+      </div>
+
+      <h1>God dag</h1>
+      <p class="undertitel">Log ind for at registrere korndata</p>
+
+      <div class="felt-gruppe">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          placeholder="navn@mail.dk"
+          autocomplete="email"
+        />
+      </div>
+
+      <div class="felt-gruppe">
+        <label for="password">Adgangskode</label>
+        <input
+          type="password"
+          id="password"
+          placeholder="••••••••"
+          autocomplete="current-password"
+        />
+      </div>
+
+      <button class="knap" id="login-knap" onclick="logInd()">Log ind</button>
+
+      <div class="fejlbesked" id="fejlbesked"></div>
+
+      <p class="bundtekst">Har du ikke en konto? Kontakt din leder.</p>
+    </div>
+
+    <script src="login.js"></script>
+  </body>
+</html>

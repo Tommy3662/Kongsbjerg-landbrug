@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdata — Startside</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-ikon">🌾</div>
+        <span class="logo-tekst">Markdata</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-punkt aktiv">
+          <span class="nav-ikon">⊞</span>
+          <span>Overblik</span>
+        </a>
+        <a href="registrer.html" class="nav-punkt">
+          <span class="nav-ikon">＋</span>
+          <span>Registrer levering</span>
+        </a>
+        <a href="mine-leveringer.html" class="nav-punkt">
+          <span class="nav-ikon">☰</span>
+          <span>Mine leveringer</span>
+        </a>
+        <!-- <a href="marker.html" class="nav-punkt">
+          <span class="nav-ikon">◈</span>
+          <span>Marker</span>
+        </a> -->
+      </nav>
+
+      <div class="sidebar-bund">
+        <div class="bruger-info">
+          <div class="bruger-avatar" id="bruger-avatar">T</div>
+          <div class="bruger-detaljer">
+            <span class="bruger-navn" id="bruger-navn">Thomas</span>
+            <span class="bruger-rolle">Landmand</span>
+          </div>
+        </div>
+        <button class="log-ud-knap" id="log-ud-knap">Log ud</button>
+      </div>
+    </aside>
+
+    <!-- HOVEDINDHOLD -->
+    <main class="hoved-indhold">
+      <!-- Topbar -->
+      <div class="topbar">
+        <div class="velkomst">
+          <h1 class="velkomst-titel">
+            God dag, <span id="velkomst-navn">Thomas</span> 👋
+          </h1>
+          <p class="velkomst-dato" id="velkomst-dato">
+            Søndag d. 12. april 2026
+          </p>
+        </div>
+        <button
+          class="ny-levering-knap"
+          onclick="window.location.href='registrer.html'"
+        >
+          + Registrer ny levering
+        </button>
+      </div>
+
+      <!-- Mark-filter -->
+      <div class="filter-bar">
+        <label class="filter-label" for="mark-filter">Vis overblik for:</label>
+        <div class="select-wrapper filter-select-wrapper">
+          <select id="mark-filter" class="form-select filter-select">
+            <option value="">Alle marker</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Statistik-kort -->
+      <div class="statistik-grid">
+        <div class="stat-kort">
+          <div class="stat-ikon mark">📦</div>
+          <div class="stat-indhold">
+            <span class="stat-tal" id="stat-leveringer">—</span>
+            <span class="stat-label">Leveringer i alt</span>
+          </div>
+        </div>
+        <div class="stat-kort">
+          <div class="stat-ikon hvede">⚖️</div>
+          <div class="stat-indhold">
+            <span class="stat-tal" id="stat-vaegt">—</span>
+            <span class="stat-label">Total vægt (tons)</span>
+          </div>
+        </div>
+        <div class="stat-kort">
+          <div class="stat-ikon jord">🌾</div>
+          <div class="stat-indhold">
+            <span class="stat-tal" id="stat-marker">—</span>
+            <span class="stat-label">Aktive marker</span>
+          </div>
+        </div>
+        <div class="stat-kort">
+          <div class="stat-ikon gra">📅</div>
+          <div class="stat-indhold">
+            <span class="stat-tal" id="stat-seneste">—</span>
+            <span class="stat-label">Seneste registrering</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seneste registreringer -->
+      <div class="sektion">
+        <div class="sektion-header">
+          <h2 class="sektion-titel">Seneste registreringer</h2>
+          <a href="mine-leveringer.html" class="se-alle-link">Se alle →</a>
+        </div>
+
+        <div class="tabel-wrapper">
+          <table class="data-tabel">
+            <thead>
+              <tr>
+                <th class="sorterbar" data-sort="dato">Dato</th>
+                <th class="sorterbar" data-sort="mark">Mark</th>
+                <th class="sorterbar" data-sort="korntype">Korntype</th>
+                <th class="sorterbar" data-sort="vaegt">Vægt</th>
+                <th class="sorterbar" data-sort="vandprocent">Vandprocent</th>
+              </tr>
+            </thead>
+            <tbody id="seneste-tbody">
+              <tr>
+                <td colspan="5" class="tabel-loading">Henter leveringer...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <script src="index.js"></script>
+  </body>
+</html>

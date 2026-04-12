@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdata — Registrer levering</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-ikon">🌾</div>
+        <span class="logo-tekst">Markdata</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-punkt">
+          <span class="nav-ikon">⊞</span>
+          <span>Overblik</span>
+        </a>
+        <a href="registrer.html" class="nav-punkt aktiv">
+          <span class="nav-ikon">＋</span>
+          <span>Registrer levering</span>
+        </a>
+        <a href="mine-leveringer.html" class="nav-punkt">
+          <span class="nav-ikon">☰</span>
+          <span>Mine leveringer</span>
+        </a>
+        <!-- <a href="marker.html" class="nav-punkt">
+          <span class="nav-ikon">◈</span>
+          <span>Marker</span> -->
+        </a>
+      </nav>
+
+      <div class="sidebar-bund">
+        <div class="bruger-info">
+          <div class="bruger-avatar" id="bruger-avatar">T</div>
+          <div class="bruger-detaljer">
+            <span class="bruger-navn" id="bruger-navn">—</span>
+            <span class="bruger-rolle">Landmand</span>
+          </div>
+        </div>
+        <button class="log-ud-knap" id="log-ud-knap">Log ud</button>
+      </div>
+    </aside>
+
+    <!-- HOVEDINDHOLD -->
+    <main class="hoved-indhold">
+
+      <div class="topbar">
+        <div class="velkomst">
+          <h1 class="velkomst-titel">Registrer levering</h1>
+          <p class="velkomst-dato" id="velkomst-dato"></p>
+        </div>
+      </div>
+
+      <div class="formular-wrapper">
+        <div class="sektion formular-sektion">
+
+          <div class="sektion-header">
+            <h2 class="sektion-titel">Ny levering</h2>
+          </div>
+
+          <div class="formular-indhold">
+
+            <!-- Korntype -->
+            <div class="form-gruppe">
+              <label for="korntype">Korntype</label>
+              <div class="select-wrapper">
+                <select id="korntype" class="form-select">
+                  <option value="">Henter korntyper...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Mark -->
+            <div class="form-gruppe">
+              <label for="mark">Mark</label>
+              <div class="select-wrapper">
+                <select id="mark" class="form-select">
+                  <option value="">Henter marker...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Maskine -->
+            <div class="form-gruppe">
+              <label for="maskine">Maskine / Traktor</label>
+              <div class="select-wrapper">
+                <select id="maskine" class="form-select">
+                  <option value="">Henter maskiner...</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Vægt og vandprocent side om side -->
+            <div class="form-grid-2">
+              <div class="form-gruppe">
+                <label for="vaegt">Vægt (kg)</label>
+                <input
+                  type="number"
+                  id="vaegt"
+                  class="form-input"
+                  placeholder="f.eks. 4200"
+                  min="0"
+                  step="1"
+                />
+              </div>
+              <div class="form-gruppe">
+                <label for="vandprocent">Vandprocent % <span class="valgfri">— valgfrit</span></label>
+                <input
+                  type="number"
+                  id="vandprocent"
+                  class="form-input"
+                  placeholder="f.eks. 14.5"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                />
+              </div>
+            </div>
+
+            <!-- Noter -->
+            <div class="form-gruppe">
+              <label for="noter">Noter (valgfrit)</label>
+              <textarea
+                id="noter"
+                class="form-input form-textarea"
+                placeholder="Eventuelle bemærkninger..."
+                rows="3"
+              ></textarea>
+            </div>
+
+            <!-- Fejlbesked -->
+            <div class="fejlbesked" id="fejlbesked"></div>
+
+            <!-- Succesbesked -->
+            <div class="succesbesked" id="succesbesked"></div>
+
+            <!-- Knapper -->
+            <div class="form-knapper">
+              <button class="knap-sekundaer" onclick="window.location.href='index.html'">
+                Annuller
+              </button>
+              <button class="knap" id="gem-knap" onclick="gemLevering()">
+                Gem levering
+              </button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <script src="registrer.js"></script>
+  </body>
+</html>
