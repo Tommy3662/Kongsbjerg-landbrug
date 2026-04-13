@@ -214,7 +214,9 @@ async function hentOverblik() {
   const [leveringRes, kornLookup] = await Promise.all([
     sb
       .from("registreringer")
-      .select("id, registreret_at, korn_vaegt, vandprocent, mark_id, marker:mark_id(id, navn), maskiner:maskine_id(navn)")
+      .select(
+        "id, registreret_at, korn_vaegt, vandprocent, mark_id, marker:mark_id(id, navn), maskiner:maskine_id(navn)"
+      )
       .order("registreret_at", { ascending: false }),
     hentKornLookup(),
   ]);
