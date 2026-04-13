@@ -8,9 +8,9 @@ const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let brugerSession = null;
-let alleKorntyper = [];
 let alleMarker = [];
 let alleMaskiner = [];
+let kornLookup = {};
 
 // Gemmer alle hentede leveringer så vi kan slå dem op ved klik
 let leveringerData = {};
@@ -21,17 +21,45 @@ let sorteringsRetning = "desc";
 // --- Dato ---
 function saetDato() {
   const nu = new Date();
-  const dage = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
-  const maaneder = ["januar","februar","marts","april","maj","juni","juli","august","september","oktober","november","december"];
+  const dage = [
+    "Søndag",
+    "Mandag",
+    "Tirsdag",
+    "Onsdag",
+    "Torsdag",
+    "Fredag",
+    "Lørdag",
+  ];
+  const maaneder = [
+    "januar",
+    "februar",
+    "marts",
+    "april",
+    "maj",
+    "juni",
+    "juli",
+    "august",
+    "september",
+    "oktober",
+    "november",
+    "december",
+  ];
   const el = document.getElementById("velkomst-dato");
-  if (el) el.textContent = `${dage[nu.getDay()]} d. ${nu.getDate()}. ${maaneder[nu.getMonth()]} ${nu.getFullYear()}`;
+  if (el)
+    el.textContent = `${dage[nu.getDay()]} d. ${nu.getDate()}. ${
+      maaneder[nu.getMonth()]
+    } ${nu.getFullYear()}`;
 }
 
 // --- Formater dato til dansk visning ---
 function formatDato(datoStr) {
   if (!datoStr) return "—";
   const d = new Date(datoStr);
-  return d.toLocaleDateString("da-DK", { day: "numeric", month: "short", year: "numeric" });
+  return d.toLocaleDateString("da-DK", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 // --- Sorter data ---
@@ -45,8 +73,8 @@ function sorterData(data) {
         valB = new Date(b.registreret_at).getTime();
         break;
       case "korntype":
-        valA = (a.korntyper?.navn ?? "").toLowerCase();
-        valB = (b.korntyper?.navn ?? "").toLowerCase();
+        valA = (a.korntype ?? "").toLowerCase();
+        valB = (b.korntype ?? "").toLowerCase();
         break;
       case "mark":
         valA = (a.marker?.navn ?? "").toLowerCase();
@@ -56,9 +84,9 @@ function sorterData(data) {
         valA = (a.maskiner?.navn ?? "").toLowerCase();
         valB = (b.maskiner?.navn ?? "").toLowerCase();
         break;
-      case "vaegt":
-        valA = parseFloat(a.vaegt) || 0;
-        valB = parseFloat(b.vaegt) || 0;
+      case "korn_vaegt":
+        valA = parseFloat(a.korn_vaegt) || 0;
+        valB = parseFloat(b.korn_vaegt) || 0;
         break;
       case "vandprocent":
         valA = parseFloat(a.vandprocent) ?? -1;
@@ -79,7 +107,9 @@ function opdaterSortHeaders() {
   document.querySelectorAll(".data-tabel th.sorterbar").forEach((th) => {
     th.classList.remove("aktiv-asc", "aktiv-desc");
     if (th.dataset.sort === sorteringsKolonne) {
-      th.classList.add(sorteringsRetning === "asc" ? "aktiv-asc" : "aktiv-desc");
+      th.classList.add(
+        sorteringsRetning === "asc" ? "aktiv-asc" : "aktiv-desc"
+      );
     }
   });
 }
@@ -89,19 +119,27 @@ function visTabel(data) {
   const tbody = document.getElementById("leveringer-tbody");
   const sorteret = sorterData(data);
 
-  tbody.innerHTML = sorteret.map((r) => `
+  tbody.innerHTML = sorteret
+    .map(
+      (r) => `
     <tr>
       <td>${formatDato(r.registreret_at)}</td>
-      <td>${r.korntyper?.navn ?? "—"}</td>
+      <td>${r.korntype ?? "—"}</td>
       <td>${r.marker?.navn ?? "—"}</td>
       <td>${r.maskiner?.navn ?? "—"}</td>
-      <td>${r.vaegt != null ? Number(r.vaegt).toLocaleString("da-DK") : "—"}</td>
+      <td>${
+        r.korn_vaegt != null
+          ? Number(r.korn_vaegt).toLocaleString("da-DK")
+          : "—"
+      }</td>
       <td>${r.vandprocent != null ? r.vandprocent + " %" : "—"}</td>
       <td>
         <button class="rediger-knap" data-id="${r.id}">Rediger</button>
       </td>
     </tr>
-  `).join("");
+  `
+    )
+    .join("");
 
   tbody.querySelectorAll(".rediger-knap").forEach((knap) => {
     knap.addEventListener("click", () => {
@@ -113,22 +151,35 @@ function visTabel(data) {
   opdaterSortHeaders();
 }
 
+// --- Byg korntype-lookup fra mark_afgroeder (mark_id + år → korntype) ---
+async function hentKornLookup() {
+  const { data } = await sb
+    .from("mark_afgroeder")
+    .select("mark_id, aar, korn(korntype)");
+  const lookup = {};
+  (data ?? []).forEach((a) => {
+    if (!lookup[a.mark_id]) lookup[a.mark_id] = {};
+    lookup[a.mark_id][a.aar] = a.korn?.korntype ?? null;
+  });
+  return lookup;
+}
+
+function kornFraLookup(lookup, mark_id, registreret_at) {
+  if (!mark_id || !lookup[mark_id]) return null;
+  const aar = new Date(registreret_at).getFullYear();
+  return lookup[mark_id][aar] ?? null;
+}
+
 // --- Hent og vis leveringer ---
 async function hentLeveringer() {
   const tbody = document.getElementById("leveringer-tbody");
 
   const { data, error } = await sb
     .from("registreringer")
-    .select(`
-      id,
-      registreret_at,
-      vaegt,
-      vandprocent,
-      noter,
-      korntyper(id, navn),
-      marker(id, navn),
-      maskiner(id, navn)
-    `)
+    .select(
+      `id, registreret_at, mark_id, total_vaegt, tom_vaegt, korn_vaegt, vandprocent, noter,
+       marker:mark_id(id, navn), maskiner:maskine_id(navn)`
+    )
     .eq("bruger_id", brugerSession.user.id);
 
   if (error) {
@@ -143,11 +194,20 @@ async function hentLeveringer() {
     return;
   }
 
+  // Berig med korntype fra mark_afgroeder-lookup
+  data.forEach((r) => {
+    r.korntype = kornFraLookup(kornLookup, r.mark_id, r.registreret_at);
+  });
+
   leveringerData = {};
   alleLeveringer = data;
-  data.forEach((r) => { leveringerData[r.id] = r; });
+  data.forEach((r) => {
+    leveringerData[r.id] = r;
+  });
 
-  document.getElementById("antal-tekst").textContent = `${data.length} levering${data.length !== 1 ? "er" : ""}`;
+  document.getElementById("antal-tekst").textContent = `${
+    data.length
+  } levering${data.length !== 1 ? "er" : ""}`;
 
   visTabel(alleLeveringer);
 }
@@ -168,11 +228,12 @@ function udfyldModalSelect(selectId, data, valgId) {
 // --- Åbn rediger-modal ---
 function aabneRediger(levering) {
   document.getElementById("rediger-id").value = levering.id;
-  document.getElementById("rediger-vaegt").value = levering.vaegt ?? "";
-  document.getElementById("rediger-vandprocent").value = levering.vandprocent ?? "";
+  document.getElementById("rediger-vaegt").value = levering.total_vaegt ?? "";
+  document.getElementById("rediger-tomvaegt").value = levering.tom_vaegt ?? "";
+  document.getElementById("rediger-vandprocent").value =
+    levering.vandprocent ?? "";
   document.getElementById("rediger-noter").value = levering.noter ?? "";
 
-  udfyldModalSelect("rediger-korntype", alleKorntyper, levering.korntyper?.id);
   udfyldModalSelect("rediger-mark", alleMarker, levering.marker?.id);
   udfyldModalSelect("rediger-maskine", alleMaskiner, levering.maskiner?.id);
 
@@ -198,22 +259,20 @@ async function gemRedigering() {
   succes.classList.remove("synlig");
 
   const id = document.getElementById("rediger-id").value;
-  const korntype_id = document.getElementById("rediger-korntype").value;
   const mark_id = document.getElementById("rediger-mark").value;
   const maskine_id = document.getElementById("rediger-maskine").value;
   const vaegt = document.getElementById("rediger-vaegt").value;
+  const tomvaegt = document.getElementById("rediger-tomvaegt").value;
   const vandprocent = document.getElementById("rediger-vandprocent").value;
   const noter = document.getElementById("rediger-noter").value;
 
   const mangler = [];
-  if (!korntype_id) mangler.push("korntype");
   if (!mark_id) mangler.push("mark");
   if (!maskine_id) mangler.push("maskine");
-  if (!vaegt) mangler.push("vægt");
+  if (!tomvaegt) mangler.push("tomvægt");
 
   if (mangler.length > 0) {
-    const feltNavne = mangler.join(", ");
-    fejl.textContent = `Udfyld venligst: ${feltNavne}.`;
+    fejl.textContent = `Udfyld venligst: ${mangler.join(", ")}.`;
     fejl.classList.add("synlig");
     return;
   }
@@ -224,10 +283,10 @@ async function gemRedigering() {
   const { data: opdateret, error } = await sb
     .from("registreringer")
     .update({
-      korntype_id: parseInt(korntype_id),
       mark_id: parseInt(mark_id),
       maskine_id: parseInt(maskine_id),
-      vaegt: parseFloat(vaegt),
+      total_vaegt: parseFloat(vaegt),
+      tom_vaegt: parseFloat(tomvaegt),
       vandprocent: vandprocent ? parseFloat(vandprocent) : null,
       noter: noter || null,
     })
@@ -246,7 +305,8 @@ async function gemRedigering() {
 
   if (!opdateret || opdateret.length === 0) {
     console.error("Ingen rækker opdateret — tjek RLS-politik i Supabase");
-    fejl.textContent = "Ændringen blev ikke gemt. Du har muligvis ikke adgang til at redigere denne levering.";
+    fejl.textContent =
+      "Ændringen blev ikke gemt. Du har muligvis ikke adgang til at redigere denne levering.";
     fejl.classList.add("synlig");
     knap.disabled = false;
     knap.textContent = "Gem ændringer";
@@ -280,18 +340,20 @@ async function init() {
 
   const navn = profil?.navn || brugerSession.user.email.split("@")[0];
   document.getElementById("bruger-navn").textContent = navn;
-  document.getElementById("bruger-avatar").textContent = navn.charAt(0).toUpperCase();
+  document.getElementById("bruger-avatar").textContent = navn
+    .charAt(0)
+    .toUpperCase();
   document.getElementById("bruger-rolle").textContent = profil?.rolle || "";
 
-  const [kornRes, markRes, maskineRes] = await Promise.all([
-    sb.from("korntyper").select("id, navn").order("navn"),
+  const [markRes, maskineRes, lookup] = await Promise.all([
     sb.from("marker").select("id, navn").order("navn"),
     sb.from("maskiner").select("id, navn").order("navn"),
+    hentKornLookup(),
   ]);
 
-  alleKorntyper = kornRes.data ?? [];
   alleMarker = markRes.data ?? [];
   alleMaskiner = maskineRes.data ?? [];
+  kornLookup = lookup;
 
   await hentLeveringer();
 }
@@ -306,7 +368,9 @@ document.getElementById("modal-annuller").addEventListener("click", lukModal);
 document.getElementById("modal-overlay").addEventListener("click", (e) => {
   if (e.target === document.getElementById("modal-overlay")) lukModal();
 });
-document.getElementById("gem-rediger-knap").addEventListener("click", gemRedigering);
+document
+  .getElementById("gem-rediger-knap")
+  .addEventListener("click", gemRedigering);
 
 // Sortering ved klik på kolonneheaders
 document.querySelectorAll(".data-tabel th.sorterbar").forEach((th) => {

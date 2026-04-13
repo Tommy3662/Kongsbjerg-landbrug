@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Markdata — Registrer levering</title>
+    <title>Markdata — Registrer markarbejde</title>
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap"
       rel="stylesheet"
@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="app-layout">
+
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-logo">
@@ -24,7 +25,7 @@
           <span class="nav-ikon">⊞</span>
           <span>Overblik</span>
         </a>
-        <a href="registrer.html" class="nav-punkt aktiv">
+        <a href="registrer.html" class="nav-punkt">
           <span class="nav-ikon">＋</span>
           <span>Registrer levering</span>
         </a>
@@ -32,7 +33,7 @@
           <span class="nav-ikon">☰</span>
           <span>Mine leveringer</span>
         </a>
-        <a href="registrer-mark.html" class="nav-punkt">
+        <a href="registrer-mark.html" class="nav-punkt aktiv">
           <span class="nav-ikon">⚙</span>
           <span>Markarbejde</span>
         </a>
@@ -44,7 +45,7 @@
 
       <div class="sidebar-bund">
         <div class="bruger-info">
-          <div class="bruger-avatar" id="bruger-avatar">T</div>
+          <div class="bruger-avatar" id="bruger-avatar">—</div>
           <div class="bruger-detaljer">
             <span class="bruger-navn" id="bruger-navn">—</span>
             <span class="bruger-rolle" id="bruger-rolle"></span>
@@ -58,7 +59,7 @@
     <main class="hoved-indhold">
       <div class="topbar">
         <div class="velkomst">
-          <h1 class="velkomst-titel">Registrer levering</h1>
+          <h1 class="velkomst-titel">Registrer markarbejde</h1>
           <p class="velkomst-dato" id="velkomst-dato"></p>
         </div>
       </div>
@@ -66,10 +67,36 @@
       <div class="formular-wrapper">
         <div class="sektion formular-sektion">
           <div class="sektion-header">
-            <h2 class="sektion-titel">Ny levering</h2>
+            <h2 class="sektion-titel">Nyt markarbejde</h2>
           </div>
 
           <div class="formular-indhold">
+
+            <!-- Operation -->
+            <div class="form-gruppe">
+              <label for="operation">Operation</label>
+              <div class="select-wrapper">
+                <select id="operation" class="form-select">
+                  <option value="">Vælg operation...</option>
+                  <option value="Pløjning">Pløjning</option>
+                  <option value="Harvning">Harvning</option>
+                  <option value="Tromling">Tromling</option>
+                  <option value="Såning">Såning</option>
+                  <option value="Høst">Høst</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Korntype — vises kun ved Såning -->
+            <div class="form-gruppe" id="korntype-gruppe" style="display:none">
+              <label for="korn">Kornsort der sås</label>
+              <div class="select-wrapper">
+                <select id="korn" class="form-select">
+                  <option value="">Henter korntyper...</option>
+                </select>
+              </div>
+            </div>
+
             <!-- Mark -->
             <div class="form-gruppe">
               <label for="mark">Mark</label>
@@ -90,49 +117,9 @@
               </div>
             </div>
 
-            <!-- Vægt og tomvægt -->
-            <div class="form-grid-2">
-              <div class="form-gruppe">
-                <label for="tomvaegt">Tomvægt (kg)</label>
-                <input
-                  type="number"
-                  id="tomvaegt"
-                  class="form-input"
-                  placeholder="f.eks. 1200"
-                  min="0"
-                  step="1"
-                />
-              </div>
-              <div class="form-gruppe">
-                <label for="vaegt">Vægt (kg)</label>
-                <input
-                  type="number"
-                  id="vaegt"
-                  class="form-input"
-                  placeholder="f.eks. 4200"
-                  min="0"
-                  step="1"
-                  value="0"
-                />
-              </div>
-            </div>
-
-            <!-- Vandprocent -->
-            <div class="form-gruppe">
-              <label for="vandprocent">Vandprocent % </label>
-              <input
-                type="number"
-                id="vandprocent"
-                class="form-input"
-                placeholder="f.eks. 14.5"
-                step="0.1"
-                value="0"
-              />
-            </div>
-
             <!-- Noter -->
             <div class="form-gruppe">
-              <label for="noter">Noter (valgfrit)</label>
+              <label for="noter">Noter <span class="valgfri">(valgfrit)</span></label>
               <textarea
                 id="noter"
                 class="form-input form-textarea"
@@ -141,29 +128,25 @@
               ></textarea>
             </div>
 
-            <!-- Fejlbesked -->
+            <!-- Fejl og succes -->
             <div class="fejlbesked" id="fejlbesked"></div>
-
-            <!-- Succesbesked -->
             <div class="succesbesked" id="succesbesked"></div>
 
             <!-- Knapper -->
             <div class="form-knapper">
-              <button
-                class="knap-sekundaer"
-                onclick="window.location.href='index.html'"
-              >
+              <button class="knap-sekundaer" onclick="window.location.href='index.html'">
                 Annuller
               </button>
-              <button class="knap" id="gem-knap" onclick="gemLevering()">
-                Gem levering
+              <button class="knap" id="gem-knap">
+                Gem markarbejde
               </button>
             </div>
+
           </div>
         </div>
       </div>
     </main>
 
-    <script src="registrer.js"></script>
+    <script src="registrer-mark.js"></script>
   </body>
 </html>

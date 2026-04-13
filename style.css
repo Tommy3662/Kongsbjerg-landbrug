@@ -834,3 +834,150 @@ body.app-layout::before {
   gap: 18px;
   overflow-y: auto;
 }
+
+/* =============================================
+   MARKER — SIDE
+   ============================================= */
+
+.marker-layout {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* --- Marker-liste --- */
+.marker-liste-wrapper {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+.mark-kort {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid #f0ebe0;
+  cursor: pointer;
+  transition: background 0.12s;
+  gap: 12px;
+}
+
+.mark-kort:hover {
+  background: #faf8f4;
+}
+
+.mark-kort:first-child {
+  border-top: none;
+}
+
+.mark-kort-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mark-kort-navn {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--jord);
+}
+
+.mark-kort-meta {
+  font-size: 12px;
+  color: var(--grå);
+}
+
+/* --- Overbliks-kort --- */
+.marker-kort-wrapper {
+  position: sticky;
+  top: 24px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+}
+
+#marker-kort {
+  height: 480px;
+  border-radius: 0 0 6px 6px;
+  transition: height 0.2s ease;
+}
+
+/* --- Mark info-panel --- */
+.mark-info-korn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--lys);
+  margin-bottom: 4px;
+}
+
+.mark-info-label {
+  font-size: 13px;
+  color: var(--grå);
+  font-weight: 400;
+}
+
+.mark-info-vaerdi {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--jord);
+  background: #f0ede6;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.mark-info-overskrift {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--grå);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 16px 0 8px;
+}
+
+.knap-lille {
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+/* Info-knap på mark-kort */
+.info-knap {
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 4px;
+  border: 1px solid #c8b99a;
+  background: transparent;
+  color: var(--jord);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.info-knap:hover {
+  background: #f0ede6;
+}
+
+/* --- Tegnekort i modal --- */
+.modal-bred {
+  max-width: 780px;
+}
+
+#tegne-kort {
+  height: 380px;
+  border-radius: 4px;
+  border: 1.5px solid #ddd8cc;
+  overflow: hidden;
+}
+
+.kort-hjaelp {
+  font-size: 12px;
+  color: var(--grå);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.kort-hjaelp strong {
+  color: var(--jord);
+}

@@ -32,10 +32,14 @@
           <span class="nav-ikon">☰</span>
           <span>Mine leveringer</span>
         </a>
-        <!-- <a href="marker.html" class="nav-punkt">
+        <a href="registrer-mark.html" class="nav-punkt">
+          <span class="nav-ikon">⚙</span>
+          <span>Markarbejde</span>
+        </a>
+        <a href="marker.html" class="nav-punkt">
           <span class="nav-ikon">◈</span>
           <span>Marker</span>
-        </a> -->
+        </a>
       </nav>
 
       <div class="sidebar-bund">
@@ -107,13 +111,6 @@
           <input type="hidden" id="rediger-id" />
 
           <div class="form-gruppe">
-            <label for="rediger-korntype">Korntype</label>
-            <div class="select-wrapper">
-              <select id="rediger-korntype" class="form-select"></select>
-            </div>
-          </div>
-
-          <div class="form-gruppe">
             <label for="rediger-mark">Mark</label>
             <div class="select-wrapper">
               <select id="rediger-mark" class="form-select"></select>
@@ -129,6 +126,17 @@
 
           <div class="form-grid-2">
             <div class="form-gruppe">
+              <label for="rediger-tomvaegt">Tomvægt (kg)</label>
+              <input
+                type="number"
+                id="rediger-tomvaegt"
+                class="form-input"
+                min="0"
+                step="1"
+                placeholder="f.eks. 1200"
+              />
+            </div>
+            <div class="form-gruppe">
               <label for="rediger-vaegt">Vægt (kg)</label>
               <input
                 type="number"
@@ -138,18 +146,17 @@
                 step="1"
               />
             </div>
-            <div class="form-gruppe">
-              <label for="rediger-vandprocent"
-                >Vandprocent % <span class="valgfri">— valgfrit</span></label
-              >
-              <input
-                type="number"
-                id="rediger-vandprocent"
-                class="form-input"
-                step="0.1"
-                placeholder="f.eks. 14.5"
-              />
-            </div>
+          </div>
+
+          <div class="form-gruppe">
+            <label for="rediger-vandprocent">Vandprocent % </label>
+            <input
+              type="number"
+              id="rediger-vandprocent"
+              class="form-input"
+              step="0.1"
+              placeholder="f.eks. 14.5"
+            />
           </div>
 
           <div class="form-gruppe">

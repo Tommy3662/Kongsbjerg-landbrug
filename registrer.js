@@ -12,13 +12,34 @@ let brugerSession = null;
 // --- Dato ---
 function saetDato() {
   const nu = new Date();
-  const dage = ["Søndag", "Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lørdag"];
+  const dage = [
+    "Søndag",
+    "Mandag",
+    "Tirsdag",
+    "Onsdag",
+    "Torsdag",
+    "Fredag",
+    "Lørdag",
+  ];
   const maaneder = [
-    "januar", "februar", "marts", "april", "maj", "juni",
-    "juli", "august", "september", "oktober", "november", "december",
+    "januar",
+    "februar",
+    "marts",
+    "april",
+    "maj",
+    "juni",
+    "juli",
+    "august",
+    "september",
+    "oktober",
+    "november",
+    "december",
   ];
   const el = document.getElementById("velkomst-dato");
-  if (el) el.textContent = `${dage[nu.getDay()]} d. ${nu.getDate()}. ${maaneder[nu.getMonth()]} ${nu.getFullYear()}`;
+  if (el)
+    el.textContent = `${dage[nu.getDay()]} d. ${nu.getDate()}. ${
+      maaneder[nu.getMonth()]
+    } ${nu.getFullYear()}`;
 }
 
 // --- Udfyld en <select> ---
@@ -39,13 +60,11 @@ function udfyldSelect(selectId, data, navnFelt) {
 
 // --- Hent alle dropdown-data ---
 async function hentDropdowns() {
-  const [kornRes, markRes, maskineRes] = await Promise.all([
-    sb.from("korntyper").select("id, navn").order("navn"),
+  const [markRes, maskineRes] = await Promise.all([
     sb.from("marker").select("id, navn").order("navn"),
     sb.from("maskiner").select("id, navn").order("navn"),
   ]);
 
-  udfyldSelect("korntype", kornRes.data, "navn");
   udfyldSelect("mark", markRes.data, "navn");
   udfyldSelect("maskine", maskineRes.data, "navn");
 }
@@ -59,19 +78,18 @@ async function gemLevering() {
   fejl.classList.remove("synlig");
   succes.classList.remove("synlig");
 
-  const korntype_id = document.getElementById("korntype").value;
   const mark_id = document.getElementById("mark").value;
   const maskine_id = document.getElementById("maskine").value;
   const vaegt = document.getElementById("vaegt").value;
+  const tomvaegt = document.getElementById("tomvaegt").value;
   const vandprocent = document.getElementById("vandprocent").value;
   const noter = document.getElementById("noter").value;
 
   // Validering
   const mangler = [];
-  if (!korntype_id) mangler.push("korntype");
   if (!mark_id) mangler.push("mark");
   if (!maskine_id) mangler.push("maskine");
-  if (!vaegt) mangler.push("vægt");
+  if (!tomvaegt) mangler.push("tomvægt");
 
   if (mangler.length > 0) {
     const feltNavne = mangler.join(", ");
@@ -85,10 +103,10 @@ async function gemLevering() {
 
   const { error } = await sb.from("registreringer").insert({
     bruger_id: brugerSession.user.id,
-    korntype_id: parseInt(korntype_id),
     mark_id: parseInt(mark_id),
     maskine_id: parseInt(maskine_id),
-    vaegt: parseFloat(vaegt),
+    total_vaegt: parseFloat(vaegt),
+    tom_vaegt: parseFloat(tomvaegt),
     vandprocent: vandprocent ? parseFloat(vandprocent) : null,
     noter: noter || null,
   });
@@ -108,10 +126,10 @@ async function gemLevering() {
 
   // Nulstil formular efter 2 sekunder
   setTimeout(() => {
-    document.getElementById("korntype").value = "";
     document.getElementById("mark").value = "";
     document.getElementById("maskine").value = "";
-    document.getElementById("vaegt").value = "";
+    document.getElementById("vaegt").value = "0";
+    document.getElementById("tomvaegt").value = "";
     document.getElementById("vandprocent").value = "0";
     document.getElementById("noter").value = "";
     knap.disabled = false;
@@ -137,7 +155,9 @@ async function init() {
 
   const navn = profil?.navn || brugerSession.user.email.split("@")[0];
   document.getElementById("bruger-navn").textContent = navn;
-  document.getElementById("bruger-avatar").textContent = navn.charAt(0).toUpperCase();
+  document.getElementById("bruger-avatar").textContent = navn
+    .charAt(0)
+    .toUpperCase();
   document.getElementById("bruger-rolle").textContent = profil?.rolle || "";
 
   await hentDropdowns();

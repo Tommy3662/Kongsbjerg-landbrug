@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="da">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdata — Marker</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Leaflet Draw -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-ikon">🌾</div>
+        <span class="logo-tekst">Markdata</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a href="index.html" class="nav-punkt">
+          <span class="nav-ikon">⊞</span>
+          <span>Overblik</span>
+        </a>
+        <a href="registrer.html" class="nav-punkt">
+          <span class="nav-ikon">＋</span>
+          <span>Registrer levering</span>
+        </a>
+        <a href="mine-leveringer.html" class="nav-punkt">
+          <span class="nav-ikon">☰</span>
+          <span>Mine leveringer</span>
+        </a>
+        <a href="registrer-mark.html" class="nav-punkt">
+          <span class="nav-ikon">⚙</span>
+          <span>Markarbejde</span>
+        </a>
+        <a href="marker.html" class="nav-punkt aktiv">
+          <span class="nav-ikon">◈</span>
+          <span>Marker</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-bund">
+        <div class="bruger-info">
+          <div class="bruger-avatar" id="bruger-avatar">—</div>
+          <div class="bruger-detaljer">
+            <span class="bruger-navn" id="bruger-navn">—</span>
+            <span class="bruger-rolle" id="bruger-rolle"></span>
+          </div>
+        </div>
+        <button class="log-ud-knap" id="log-ud-knap">Log ud</button>
+      </div>
+    </aside>
+
+    <!-- HOVEDINDHOLD -->
+    <main class="hoved-indhold">
+
+      <div class="topbar">
+        <div class="velkomst">
+          <h1 class="velkomst-titel">Marker</h1>
+          <p class="velkomst-dato" id="velkomst-dato"></p>
+        </div>
+        <button class="ny-levering-knap" id="ny-mark-knap">
+          + Opret ny mark
+        </button>
+      </div>
+
+      <!-- Marker-liste og kort side om side -->
+      <div class="marker-layout">
+
+        <!-- Venstre: liste over marker -->
+        <div class="marker-liste-wrapper sektion">
+          <div class="sektion-header">
+            <h2 class="sektion-titel">Alle marker</h2>
+            <span class="antal-tekst" id="antal-marker"></span>
+          </div>
+          <div id="marker-liste">
+            <p class="tabel-loading">Henter marker...</p>
+          </div>
+        </div>
+
+        <!-- Højre: info + kort -->
+        <div class="marker-kort-wrapper sektion">
+
+          <div class="sektion-header">
+            <h2 class="sektion-titel" id="kort-titel">Overblik</h2>
+            <button class="knap-sekundaer knap-lille" id="tilbage-knap" style="display:none">← Alle marker</button>
+          </div>
+
+          <!-- Info-panel: skjult som standard, vises når en mark vælges -->
+          <div id="mark-info-panel" style="display:none">
+
+            <div class="mark-info-korn">
+              <span class="mark-info-label">Kornsort i år</span>
+              <span class="mark-info-vaerdi" id="mark-info-korn">—</span>
+            </div>
+
+            <h3 class="mark-info-overskrift">Markoperationer i år</h3>
+            <div class="tabel-wrapper">
+              <table class="data-tabel">
+                <thead>
+                  <tr>
+                    <th>Dato</th>
+                    <th>Operation</th>
+                    <th>Noter</th>
+                  </tr>
+                </thead>
+                <tbody id="operationer-tbody">
+                  <tr><td colspan="3" class="tabel-loading">Indlæser...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="mark-info-overskrift" style="margin-top:20px">Kort</h3>
+          </div>
+
+          <div id="marker-kort"></div>
+        </div>
+
+      </div>
+    </main>
+
+    <!-- OPRET / REDIGER MODAL -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal modal-bred">
+        <div class="modal-header">
+          <h2 class="modal-titel" id="modal-titel">Opret ny mark</h2>
+          <button class="modal-luk" id="modal-luk">✕</button>
+        </div>
+
+        <div class="modal-indhold">
+          <input type="hidden" id="rediger-mark-id" />
+
+          <div class="form-gruppe">
+            <label for="mark-navn">Marknavn</label>
+            <input type="text" id="mark-navn" class="form-input" placeholder="f.eks. Nørremarks" />
+          </div>
+
+          <div class="form-gruppe">
+            <label>Polygon <span class="valgfri">— tegn marken på kortet</span></label>
+            <div id="tegne-kort"></div>
+            <p class="kort-hjaelp" id="kort-hjaelp">
+              Brug <strong>polygonværktøjet</strong> (⬠) i kortets øverste venstre hjørne til at tegne markens grænse. Klik på det første punkt for at afslutte.
+            </p>
+          </div>
+
+          <div class="fejlbesked" id="modal-fejl"></div>
+          <div class="succesbesked" id="modal-succes"></div>
+
+          <div class="form-knapper">
+            <button class="knap-sekundaer" id="modal-annuller">Annuller</button>
+            <button class="knap" id="gem-mark-knap">Gem mark</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="marker.js"></script>
+  </body>
+</html>
